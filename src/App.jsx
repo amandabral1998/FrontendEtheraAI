@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { Container, Box, Alert, Snackbar, CircularProgress } from "@mui/material";
+import { Container, Box, Alert, Snackbar, Grid, Card, CardContent, Skeleton } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import api from "./services/api";
 
@@ -64,6 +64,7 @@ function App() {
   const [employees, setEmployees] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -126,14 +127,18 @@ function App() {
     if (!employeeId) {
       setAttendance([]);
       setSelectedEmployee(null);
+      setAttendanceLoading(false);
       return;
     }
+    setAttendanceLoading(true);
     try {
       const response = await api.get(`/api/attendance/employee/${employeeId}`);
       setAttendance(response.data || []);
       setSelectedEmployee(employeeId);
     } catch (error) {
       showSnackbar(getErrorMessage(error), "error");
+    } finally {
+      setAttendanceLoading(false);
     }
   };
 
@@ -174,8 +179,26 @@ function App() {
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Suspense
           fallback={
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-              <CircularProgress color="primary" />
+            <Box sx={{ mt: 4 }}>
+              <Skeleton variant="text" width="30%" height={40} animation="wave" sx={{ mb: 2 }} />
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Card>
+                    <CardContent>
+                      <Skeleton variant="text" width="50%" animation="wave" sx={{ mb: 2 }} />
+                      <Skeleton variant="rectangular" height={200} animation="wave" />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card>
+                    <CardContent>
+                      <Skeleton variant="text" width="50%" animation="wave" sx={{ mb: 2 }} />
+                      <Skeleton variant="rectangular" height={300} animation="wave" />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
             </Box>
           }
         >
@@ -206,6 +229,7 @@ function App() {
                   selectedEmployee={selectedEmployee}
                   addAttendance={addAttendance}
                   fetchAttendance={fetchAttendance}
+                  attendanceLoading={attendanceLoading}
                 />
               }
             />

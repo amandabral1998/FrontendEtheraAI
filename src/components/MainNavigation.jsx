@@ -11,9 +11,7 @@ const MainNavigation = () => {
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ mb: 4, bgcolor: 'white' }}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600, color: 'primary.main' }}>
-          HRMS Lite
-        </Typography>
+        
         <Box>
           <Button
             component={RouterLink}
